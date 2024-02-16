@@ -21,14 +21,13 @@ public class JwtUtils {
     @Value("${backendapi.app.jwtSecret}")
     private String jwtSecret;
 
-
-    //Not: Generate JWT
     public String generateJwtToken(Authentication authentication){
+
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return generateJwtTokenFromUsername(userDetails.getUsername());
+        return generateTokenFromUsername(userDetails.getUsername());
     }
 
-    public String generateJwtTokenFromUsername(String username){
+    public String generateTokenFromUsername(String username){
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
@@ -37,8 +36,8 @@ public class JwtUtils {
                 .compact();
     }
 
-    // Not: Validate JWT
     public boolean validateJwtToken(String jwtToken){
+
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwtToken);
             return true;
@@ -56,13 +55,11 @@ public class JwtUtils {
         return false;
     }
 
-    // Not: getUsernameFromJWT
-    public String getUserNameFromJwtToken(String token) {
+    public String getUserNameFromJwtToken(String token){
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
-
 }
