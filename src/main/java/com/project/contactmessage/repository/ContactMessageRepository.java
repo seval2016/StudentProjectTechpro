@@ -25,11 +25,8 @@ public interface ContactMessageRepository extends JpaRepository<ContactMessage, 
 
     @Query("SELECT c FROM ContactMessage c WHERE " +
             "(EXTRACT(HOUR FROM c.dateTime) BETWEEN :startHour AND :endHour) AND " +
-            //                      09      between   09       and    17     and   ----->  TRUE
             "(EXTRACT(HOUR FROM c.dateTime) != :startHour OR EXTRACT(MINUTE FROM c.dateTime) >= :startMinute) AND " + // baslama dakikasina gore kontrol
-            //                      09      !=      09    OR                          30     >=      15        AND    ----->  TRUE
             "(EXTRACT(HOUR FROM c.dateTime) != :endHour OR EXTRACT(MINUTE FROM c.dateTime) <= :endMinute)") // bitis dakikasina gore kontrol
-    //                      09      !=    17    OR                          30     <=     30      ----->  TRUE
 
     List<ContactMessage> findMessagesBetweenTimes(@Param("startHour") int startHour,
                                                   @Param("startMinute") int startMinute,

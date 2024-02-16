@@ -94,4 +94,8 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "meet_id")
     )
     private List<Meet> meetList;
+
+    @OneToOne
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private UserRole userRole;
 }
