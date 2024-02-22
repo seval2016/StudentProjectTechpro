@@ -1,7 +1,7 @@
 package com.project.entity.enums;
 
 public enum RoleType {
-
+    //Admin, Teacher, Student, Manager, Assistant_manager
     ADMIN("Admin"),
 
     TEACHER("Teacher"),

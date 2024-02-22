@@ -43,11 +43,16 @@ public class User {
 
     private String birthPlace;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)//JSON verisinden nesneye donusturulurken
-    // kullanilsin, tersi olmasin, Örneğin, bir kullanıcı nesnesi bir REST API üzerinden istemciye
-    // gönderildiğinde, şifre alanı JSON içinde yer almayacak ve bu sayede şifre korunmuş olacaktır.
-    // Ancak, bir kullanıcı yeni bir hesap oluştururken veya şifresini güncellerken, bu değer JSON
-    // içinde gönderilebilir ve Java nesnesine dönüştürülebilir.
+    /*
+    //JSON verisinden nesneye donusturulurken
+    //kullanilsin, tersi olmasin, Örneğin, bir kullanıcı nesnesi bir REST API üzerinden istemciye
+    //gönderildiğinde, şifre alanı JSON içinde yer almayacak ve bu sayede şifre korunmuş olacaktır.
+    //Ancak, bir kullanıcı yeni bir hesap oluştururken veya şifresini güncellerken, bu değer JSON
+    //içinde gönderilebilir ve Java nesnesine dönüştürülebilir.
+
+    // my note: Json verisinden nesneye dönüşüm yapıldığı zaman yani client'dan veri geldiği zaman elbette password verisi olacak fakat tam tersi olursa yani kullanıcı nesnesini bir restapi üzerinden client tarafına gönderildiğinde şifre alanı json içerisinde yer almamalı ki  bu sayede şifre korunmuş olsun. Bunun için @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) kodunu yazıyoruz.
+    */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Column(unique = true)
@@ -56,6 +61,10 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    /*
+    my note: Sistemde müdahale edilemeyen veri demektir. Yani sistemde üç tane admin olduğunu düşünürsek admin diğer iki admini sildikten sonra kendini de silerse bu durumda sisteme müdahale eddebilecek kimse kalmayacak ki böyle bir durumda sistem değiştirilemez olur. Bu bir yazılım hatasıdır. Bu yüzden bazı user'lara built in özelliği vereceğiz ki bu tarz bir hata ile karşılaşmayalım.
+
+    */
     private Boolean built_in;
 
     private String motherName;
@@ -74,6 +83,19 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender; // Erkek , erkek , Erkek , Bay , bay , BAY , ERKEK
 
+   /*
+    // UserRole -> Herbir kullanıcının bir user rolü olmalıdır.
+    // StudentInfo   - > Bu öğrenci ise StudentInfo bilgileri olmalı
+    // LessonProgram - > Student yada Teacher ise Lesson program bilgileri olmalı
+    // Sistem designında hiçbir user lesson ile bağlantısı yok herşey lesson program üzerinden design edilmiş.
+    // Meet - > Eğer user rehber öğretmen de olsa student da olsa  meet ile ilişkisi olması lazım. Benim rehber toplantılarımı getir dediğinde ileriki tarihlerde olan toplantılarını da görmesi gerekli
+
+    */
+
+    /*
+    mappedBy = "teacher" da student de diyebiliriz sorun olmaz. Teachers yada student isimli değişken neredeyse setlemeler oradan yapılsın.
+    CascadeType.REMOVE -> Mesela bir öğrenciyi silersek bu öğrencinin studentInfo'larının da silinmesi gerekli.Bu işlem bu kod ile silinebilir. Yani o user silinirken o user'a ait infolar da silinir.
+     */
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.REMOVE)
     private List<StudentInfo> studentInfos;
 
@@ -95,7 +117,7 @@ public class User {
     )
     private List<Meet> meetList;
 
-    @OneToOne
+    @OneToOne 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private UserRole userRole;
 }

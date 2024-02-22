@@ -7,13 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -27,29 +27,31 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
+    private final AuthEntryPointJwt unauthorizedHandler;
     private final UserDetailsServiceImpl userDetailsService;
-    private final AuthEntryPointJwt authEntryPointJwt;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+        return  configuration.getAuthenticationManager();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http.cors().and()
                 .csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
+                //kimlik doğrulama hatası durumunda nasıl davranılacağını yapılandırır.
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers(AUTH_WHITE_LIST).permitAll()
                 .anyRequest().authenticated();
+
         http.headers().frameOptions().sameOrigin();
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter(){
         return new AuthTokenFilter();
@@ -65,35 +67,41 @@ public class WebSecurityConfig {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
+
         return authenticationProvider;
+
     }
 
     @Bean
     public WebMvcConfigurer corsConfigurer(){
 
         return new WebMvcConfigurer() {
+            // addCorsMappings adlı bir metodu override ediyoruz, yani
+            // bu metotun içini doldurarak CORS ayarlarını özelleştirebiliriz.
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-
+                // uygulamamıza gelen her isteğe bu ayarlar uygulanır.
                 registry.addMapping("/**")
+                        // tüm kaynaklara (farklı sunuculara veya domainlere) isteğe
+                        // izin verildiğini belirtir. Yani, başka bir sunucudan gelen
+                        // isteklere izin verilir.
                         .allowedOrigins("*")
+                        // gelen isteklerdeki başlıklar (örneğin, Authorization
+                        // veya Content-Type) herhangi bir sınırlama olmadan kabul edilir.
                         .allowedHeaders("*")
+                        // tüm HTTP metotlarına (GET, POST, PUT, DELETE vb.) isteğe izin verilir.
                         .allowedMethods("*");
             }
         };
-
     }
 
-    private static final String[] AUTH_WHITE_LIST = {
-            "/v3/api-docs/**", // eklenecek
-            "swagger-ui.html", // eklenecek
-            "/swagger-ui/**", // eklenecek
+    private static final String[] AUTH_WHITE_LIST ={
             "/",
-            "/index.html",
+            "index.html",
             "/images/**",
             "/css/**",
             "/js/**",
-            "/contactMessages/save",
+            "contactMessages/save",
             "/auth/login"
     };
 }

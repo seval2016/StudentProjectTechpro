@@ -10,11 +10,13 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="roles")
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class UserRole {
+public class UserRole { //user ile  role enum class arasındaki concrete class
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

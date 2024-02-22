@@ -35,9 +35,16 @@ public class Meet {
     @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "HH:mm",timezone = "US")
     private LocalTime stopTime;
 
+    /*
+    Bu classın sadece userlar ile alakası var. Bir rehber öğretmenin birden fazla rehberlik toplantısı olabilir.
+     */
+
     @ManyToOne(cascade = CascadeType.PERSIST)
     private User advisoryTeacher;
 
+    /*
+    Bir öğrenci birden fazla rehberlik toplantısına katılabildiği gibi bir toplantıya birden fazla öğrenci katılabilir.
+     Bu ksımda özellikle customize edilir çünkü eger student_id diye belirtmezsek user_id olarak alır bu da güzel olmaz */
     @ManyToMany
     @JoinTable(
             name = "meet_student_table",

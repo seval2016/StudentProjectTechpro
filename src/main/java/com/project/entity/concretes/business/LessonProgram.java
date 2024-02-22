@@ -40,13 +40,25 @@ public class LessonProgram {
     )
     private Set<Lesson> lessons;
 
+    /*
+    //CascadeType.PERSIST özelliği ile işaretlenmişse, bir LessonProgram oluşturulduğunda bu ders programı ile ilişkilendirilmiş olan eğitim dönemi nesnesi de otomatik olarak persist edilecektir.
+
+    my note: içinde bulunduğum lesson program kaydedilirken educationTerm bilgisi de kaydedilsin istiyorsam CascadeType.PERSIST kısmını tetikliyoruz. Persist kalıcı hale getiriyor.
+     */
     @ManyToOne(cascade = CascadeType.PERSIST)
     private EducationTerm educationTerm;
 
+    /*
+     - ilişki user tarafta yani lessonsProgramList field'ının bulunduğu yerde setleniyor.
+     - FetchType.EAGER ile LessonProgram nesnesi oluşturulduğunda otomatik olarak getirilir (eager loading). Bu, ilgili LessonProgram nesnesinin yüklenmesi sırasında ilişkili kullanıcıları (users) veritabanından çekilir ve bu kullanıcılar users alanına otomatik olarak atanır.
+     */
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToMany(mappedBy = "lessonsProgramList", fetch = FetchType.EAGER)
     private Set<User> users;
 
+    /*
+    Servis katındayız ve bir tane lessonprogram silmek istiyoruz. varsa diye bir kontrol yapıyorum eğer true dönerse silerim. Peki burada kontrol etmem gerekn birşey var mı ? Silmeden önce kontrol etmem gereken userslar var. Lessonprogramın herhangi bir instancesi silinecekse önce @PreRemove methodu tetikle sonra delete methodunu çalıştır. Bu method lesson programı silersem bu lesson programı alan tüm kullanıcıların lesson programlarını sil.
+     */
     @PreRemove
     private void removeLessonProgramFromUser(){
         users.forEach(user -> user.getLessonsProgramList().remove(this));

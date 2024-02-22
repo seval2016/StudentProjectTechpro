@@ -44,8 +44,11 @@ public class EducationTerm {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate lastRegistrationDate;
 
+    /*
+    Bir educationTerm kaydediliyorsa lessonProgram'larda kaydedilsin eğer siliniyorsa lessonProgram'lar da silinsin demek istiyorsak CascadeType.ALL kullanırız.
+     */
     @OneToMany(mappedBy = "educationTerm", cascade = CascadeType.ALL)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) //Bu kısma jsonignore da diyebiliriz. Bu kısımda response tarafına yazılmasını engeller ve bu durum sonsun döngü hatasını almamamızı sağlar.
     private List<LessonProgram> lessonProgram;
 
 
