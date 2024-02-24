@@ -1,4 +1,4 @@
-package com.project.repository;
+package com.project.repository.user;
 
 import com.project.entity.concretes.user.UserRole;
 import com.project.entity.enums.RoleType;

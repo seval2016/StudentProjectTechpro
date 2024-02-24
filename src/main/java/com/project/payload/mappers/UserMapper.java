@@ -2,6 +2,7 @@ package com.project.payload.mappers;
 
 import com.project.entity.concretes.user.User;
 import com.project.payload.request.abstracts.BaseUserRequest;
+import com.project.payload.request.user.UserRequest;
 import com.project.payload.response.user.StudentResponse;
 import com.project.payload.response.user.TeacherResponse;
 import com.project.payload.response.user.UserResponse;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
 
-    // POJO --> DTO tür dönüşümü
     public UserResponse mapUserToUserResponse(User user){
         return  UserResponse.builder()
                 .userId(user.getId())
@@ -27,7 +27,6 @@ public class UserMapper {
                 .build();
     }
 
-    //DTO --> POJO tür dönüşümü
     public User mapUserRequestToUser(BaseUserRequest userRequest){
 
         return User.builder()
@@ -82,5 +81,22 @@ public class UserMapper {
                 .build();
     }
 
+    public User mapUserRequestToUpdatedUser(UserRequest userRequest, Long userId){
+
+        return User.builder()
+                .id(userId)
+                .username(userRequest.getUsername())
+                .name(userRequest.getName())
+                .surname(userRequest.getSurname())
+                .password(userRequest.getPassword())
+                .ssn(userRequest.getSsn())
+                .birthDay(userRequest.getBirthDay())
+                .birthPlace(userRequest.getBirthPlace())
+                .phoneNumber(userRequest.getPhoneNumber())
+                .gender(userRequest.getGender())
+                .email(userRequest.getEmail())
+                .build();
+
+    }
 
 }

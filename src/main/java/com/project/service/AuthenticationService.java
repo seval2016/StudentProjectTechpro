@@ -2,13 +2,14 @@ package com.project.service;
 
 import com.project.entity.concretes.user.User;
 import com.project.exception.BadRequestException;
-import com.project.payload.messages.mappers.UserMapper;
+
+import com.project.payload.mappers.UserMapper;
 import com.project.payload.messages.ErrorMessages;
 import com.project.payload.request.authentication.LoginRequest;
 import com.project.payload.request.business.UpdatePasswordRequest;
 import com.project.payload.response.authentication.AuthResponse;
 import com.project.payload.response.user.UserResponse;
-import com.project.repository.UserRepository;
+import com.project.repository.user.UserRepository;
 import com.project.security.jwt.JwtUtils;
 import com.project.security.service.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;

@@ -4,7 +4,7 @@ import com.project.entity.concretes.user.UserRole;
 import com.project.entity.enums.RoleType;
 import com.project.exception.ResourceNotFoundException;
 import com.project.payload.messages.ErrorMessages;
-import com.project.repository.UserRoleRepository;
+import com.project.repository.user.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

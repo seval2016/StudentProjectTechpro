@@ -1,7 +1,7 @@
 package com.project.security.service;
 
 import com.project.entity.concretes.user.User;
-import com.project.repository.UserRepository;
+import com.project.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
