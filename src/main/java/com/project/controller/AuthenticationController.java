@@ -1,8 +1,10 @@
 package com.project.controller;
 
+import com.project.entity.concretes.user.User;
 import com.project.payload.messages.SuccessMessages;
 import com.project.payload.request.authentication.LoginRequest;
 import com.project.payload.request.business.UpdatePasswordRequest;
+import com.project.payload.response.abstracts.BaseUserResponse;
 import com.project.payload.response.authentication.AuthResponse;
 import com.project.payload.response.user.UserResponse;
 import com.project.service.AuthenticationService;
@@ -36,7 +38,8 @@ public class AuthenticationController {
 
     @PatchMapping("/updatePassword") // http://localhost:8080/auth/updatePassword + Patch + JSON
     @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER','ASSISTANT_MANAGER','TEACHER','STUDENT')")
-    public ResponseEntity<String> updatePassword(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest,HttpServletRequest request){
+    public ResponseEntity<String> updatePassword(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest,
+                                                 HttpServletRequest request){
         authenticationService.updatePassword(updatePasswordRequest, request);
         String response = SuccessMessages.PASSWORD_CHANGED_RESPONSE_MESSAGE;
         return ResponseEntity.ok(response);
