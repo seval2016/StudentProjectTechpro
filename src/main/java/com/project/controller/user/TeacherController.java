@@ -23,7 +23,7 @@ public class TeacherController {
     private final TeacherService teacherService;
 
     @PostMapping("/save") // http://localhost:8080/teacher/save + POST + JSON
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')") //yeni bir teacher kaydetmeyi sadece admin yapabiliyor
     public ResponseEntity<ResponseMessage<TeacherResponse>> saveTeacher(@RequestBody @Valid TeacherRequest teacherRequest){
         return ResponseEntity.ok(teacherService.saveTeacher(teacherRequest));
     }

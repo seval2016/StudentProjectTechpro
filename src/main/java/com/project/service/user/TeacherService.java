@@ -47,7 +47,8 @@ public class TeacherService {
         //!!! DTO --> POJO
         User teacher = userMapper.mapTeacherRequestToUser(teacherRequest);
 
-        teacher.setUserRole(userRoleService.getUserRole(RoleType.TEACHER));
+        teacher.setUserRole(userRoleService.getUserRole(RoleType.TEACHER));//getUserRole() methodu argüman olan rol db'de var mı kontrol ediyor varsa getiriyor yoksa haa fırlatıyor. Bu kodda pojo class'ta olması gereken rol bilgisini setlemiş olduk.
+
         //!!! TODO : LessonProgram setleme islemi :
         teacher.setPassword(passwordEncoder.encode(teacherRequest.getPassword()));
 
@@ -59,15 +60,16 @@ public class TeacherService {
 
         return ResponseMessage.<TeacherResponse>builder()
                 .message(SuccessMessages.TEACHER_SAVED)
-                .httpStatus(HttpStatus.CREATED)
+                .httpStatus(HttpStatus.CREATED)//neden burada gönderildi de user da gönderilmedi ?
                 .object(userMapper.mapUserToTeacherResponse(savedTeacher))
                 .build();
     }
 
     public ResponseMessage<TeacherResponse> updateTeacherForManagers(TeacherRequest teacherRequest, Long userId) {
 
-        //!!! id kontrolu
+        //!!! id var mı yok mu kontrolu
         User user = methodHelper.isUserExist(userId);
+
         //!!! parametrede gelen User gercekten Teacher mi kontrolu
         methodHelper.checkRole(user, RoleType.TEACHER);
 
@@ -75,6 +77,7 @@ public class TeacherService {
 
         //!!! unique kontrolu
         uniquePropertyValidator.checkUniqueProperties(user, teacherRequest);
+
         //!!! DTO --> POJO
         User updatedTeacher = userMapper.mapTeacherRequestToUpdatedUser(teacherRequest, userId);
         updatedTeacher.setPassword(passwordEncoder.encode(teacherRequest.getPassword()));
