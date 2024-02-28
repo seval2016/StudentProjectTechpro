@@ -25,7 +25,7 @@ public class Lesson {
 
     private Integer creditScore;
 
-    private Boolean isCompulsory;
+    private Boolean isCompulsory;//zorunlu ders mi ?
 
     @ManyToMany
     @JsonIgnore

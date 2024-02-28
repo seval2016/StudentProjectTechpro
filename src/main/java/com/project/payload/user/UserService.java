@@ -1,12 +1,12 @@
-package com.project.service.user;
+package com.project.payload.user;
 
 import com.project.entity.concretes.user.User;
 import com.project.entity.enums.RoleType;
 import com.project.exception.BadRequestException;
 import com.project.exception.ResourceNotFoundException;
 import com.project.payload.mappers.UserMapper;
-import com.project.payload.request.business.messages.ErrorMessages;
-import com.project.payload.request.business.messages.SuccessMessages;
+import com.project.payload.messages.ErrorMessages;
+import com.project.payload.messages.SuccessMessages;
 import com.project.payload.request.user.UserRequest;
 import com.project.payload.request.user.UserRequestWithoutPassword;
 import com.project.payload.response.abstracts.BaseUserResponse;

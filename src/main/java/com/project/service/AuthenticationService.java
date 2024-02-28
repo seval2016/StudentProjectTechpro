@@ -4,7 +4,7 @@ import com.project.entity.concretes.user.User;
 import com.project.exception.BadRequestException;
 
 import com.project.payload.mappers.UserMapper;
-import com.project.payload.request.business.messages.ErrorMessages;
+import com.project.payload.messages.ErrorMessages;
 import com.project.payload.request.authentication.LoginRequest;
 import com.project.payload.request.business.UpdatePasswordRequest;
 import com.project.payload.response.authentication.AuthResponse;

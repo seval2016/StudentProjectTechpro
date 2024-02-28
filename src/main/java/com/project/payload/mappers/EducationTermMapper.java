@@ -30,7 +30,7 @@ public class EducationTermMapper {
                 .lastRegistrationDate(educationTerm.getLastRegistrationDate())
                 .build();
     }
-
+    //!!! Update kısmında kullanılacak
     public EducationTerm mapEducationTermRequestToUpdatedEducationTerm(Long id, EducationTermRequest educationTermRequest) {
         return mapEducationTermRequestToEducationTerm(educationTermRequest)
                 .toBuilder()

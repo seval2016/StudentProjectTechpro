@@ -1,13 +1,12 @@
 package com.project.controller.user;
 
-import com.project.payload.request.business.ChooseLessonProgramWithId;
 import com.project.payload.request.user.StudentRequest;
 import com.project.payload.request.user.StudentRequestWithoutPassword;
 
 import com.project.payload.response.business.ResponseMessage;
 import com.project.payload.response.user.StudentResponse;
 
-import com.project.service.user.StudentService;
+import com.project.payload.user.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

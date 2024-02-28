@@ -1,4 +1,4 @@
-package com.project.payload.request.business.messages;
+package com.project.payload.messages;
 
 public class ErrorMessages {
 

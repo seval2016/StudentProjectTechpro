@@ -7,10 +7,12 @@ import com.project.payload.response.business.ResponseMessage;
 import com.project.service.business.EducationTermService;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
@@ -50,16 +52,15 @@ public class EducationTermController {
         return educationTermService.getAllEducationTermByPage(page,size,sort,type);
     }
 
-    @DeleteMapping("/delete/{id}")//http://localhost:8080/educationTerms/delete/2 + DELETE
-    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER','ASSISTANT_MANAGER')")
+    @DeleteMapping("/delete/{id}")//http://localhost:8080/educationTerms/delete/1
+    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
     public ResponseMessage<?> deleteEducationTermById(@PathVariable Long id){
         return educationTermService.deleteEducationTermById(id);
     }
 
-    @PutMapping("/update/{id}")//http://localhost:8080/educationTerms/update/2 + PUT
+    @PutMapping("/update/{id}")//http://localhost:8080/educationTerms/update/2 + JSON
     @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER','ASSISTANT_MANAGER')")
-    public ResponseMessage<EducationTermResponse> updateEducationTerm(@PathVariable Long id,
-                                                                      @RequestBody @Valid EducationTermRequest educationTermRequest){
+    public ResponseMessage<EducationTermResponse> updateEducationTerm(@PathVariable Long id, @RequestBody @Valid EducationTermRequest educationTermRequest){
         return educationTermService.updateEducationTerm(id,educationTermRequest);
     }
 

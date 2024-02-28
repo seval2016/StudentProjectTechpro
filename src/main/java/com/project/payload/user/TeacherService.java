@@ -1,12 +1,12 @@
-package com.project.service.user;
+package com.project.payload.user;
 
 import com.project.contactmessage.repository.ContactMessageRepository;
 import com.project.entity.concretes.user.User;
 import com.project.entity.enums.RoleType;
 import com.project.exception.ConflictException;
 import com.project.payload.mappers.UserMapper;
-import com.project.payload.request.business.messages.ErrorMessages;
-import com.project.payload.request.business.messages.SuccessMessages;
+import com.project.payload.messages.ErrorMessages;
+import com.project.payload.messages.SuccessMessages;
 import com.project.payload.request.user.TeacherRequest;
 import com.project.payload.response.business.ResponseMessage;
 import com.project.payload.response.user.StudentResponse;

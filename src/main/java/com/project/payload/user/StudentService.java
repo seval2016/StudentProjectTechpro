@@ -1,9 +1,9 @@
-package com.project.service.user;
+package com.project.payload.user;
 
 import com.project.entity.concretes.user.User;
 import com.project.entity.enums.RoleType;
 import com.project.payload.mappers.UserMapper;
-import com.project.payload.request.business.messages.SuccessMessages;
+import com.project.payload.messages.SuccessMessages;
 import com.project.payload.request.user.StudentRequest;
 import com.project.payload.request.user.StudentRequestWithoutPassword;
 import com.project.payload.response.business.ResponseMessage;

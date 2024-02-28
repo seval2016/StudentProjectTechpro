@@ -5,8 +5,8 @@ import com.project.exception.BadRequestException;
 import com.project.exception.ConflictException;
 import com.project.exception.ResourceNotFoundException;
 import com.project.payload.mappers.EducationTermMapper;
-import com.project.payload.request.business.messages.ErrorMessages;
-import com.project.payload.request.business.messages.SuccessMessages;
+import com.project.payload.messages.ErrorMessages;
+import com.project.payload.messages.SuccessMessages;
 import com.project.payload.request.business.EducationTermRequest;
 
 import com.project.payload.response.business.EducationTermResponse;
@@ -99,7 +99,9 @@ public class EducationTermService {
         return educationTermRepository.findAll()
                 .stream()
                 .map(educationTermMapper::mapEducationTermToEducationTermResponse)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());//list data türüne çeviriyoruz
+
+        //Ödev : lambda olmadan bu methodu yazmaya calışalım
     }
 
     public Page<EducationTermResponse> getAllEducationTermByPage(int page, int size, String sort, String type) {
@@ -108,8 +110,12 @@ public class EducationTermService {
                 .map(educationTermMapper::mapEducationTermToEducationTermResponse);
     }
 
-    public ResponseMessage<?> deleteEducationTermById(Long id) {
+    public ResponseMessage deleteEducationTermById(Long id) {
+
         isEducationTermExist(id);
+        //!!! SORU : EducationTerm silinince LessonProgramlar ne olacak, buraya onuda sileecek
+        // kodlar eklememiz gerekecek mi?? Hayir, EducationTerm entityde Cascade kullanildigi icin
+        // gerek yok..
         educationTermRepository.deleteById(id);
 
         return ResponseMessage.builder()
@@ -120,8 +126,12 @@ public class EducationTermService {
 
     public ResponseMessage<EducationTermResponse> updateEducationTerm(Long id, EducationTermRequest educationTermRequest) {
 
+        // !!! id var mi ??
         isEducationTermExist(id);
+
         //TODO : ayni yil olunca hata aliyoruz
+
+        //!!! tarihler arasında çakışma var mı ??
         validateEducationTermDates(educationTermRequest);
         EducationTerm educationTerm2 =
                 educationTermMapper.mapEducationTermRequestToUpdatedEducationTerm(id,educationTermRequest);
