@@ -5,8 +5,8 @@ import com.project.entity.concretes.user.User;
 import com.project.entity.enums.RoleType;
 import com.project.exception.ConflictException;
 import com.project.payload.mappers.UserMapper;
-import com.project.payload.messages.ErrorMessages;
-import com.project.payload.messages.SuccessMessages;
+import com.project.payload.request.business.messages.ErrorMessages;
+import com.project.payload.request.business.messages.SuccessMessages;
 import com.project.payload.request.user.TeacherRequest;
 import com.project.payload.response.business.ResponseMessage;
 import com.project.payload.response.user.StudentResponse;
@@ -81,12 +81,13 @@ public class TeacherService {
         //!!! DTO --> POJO
         User updatedTeacher = userMapper.mapTeacherRequestToUpdatedUser(teacherRequest, userId);
         updatedTeacher.setPassword(passwordEncoder.encode(teacherRequest.getPassword()));
+
         //!!! TODO :  LessonProgramlar setlenecek
         updatedTeacher.setUserRole(userRoleService.getUserRole(RoleType.TEACHER));
 
         User savedTeacher = userRepository.save(updatedTeacher);
 
-        return ResponseMessage.<TeacherResponse>builder()
+        return ResponseMessage. <TeacherResponse>builder()
                 .object(userMapper.mapUserToTeacherResponse(savedTeacher))
                 .message(SuccessMessages.TEACHER_UPDATE)
                 .httpStatus(HttpStatus.OK)
@@ -95,7 +96,9 @@ public class TeacherService {
 
     public List<StudentResponse> getAllStudentByAdvisorUsername(String userName) {
 
+        //userName bilgisi var mı db de ?
         User teacher = methodHelper.isUserExistByUsername(userName);
+
         //!!! isAdvisor ??
         methodHelper.checkAdvisor(teacher);
 

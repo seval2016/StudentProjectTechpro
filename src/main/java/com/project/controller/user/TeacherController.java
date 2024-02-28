@@ -38,7 +38,7 @@ public class TeacherController {
     //!!! Bir rehber ogretmenin kendi ogrencilerinin tamamini getiren metod
     @GetMapping("/getAllStudentByAdvisorUsername") // http://localhost:8080/teacher/getAllStudentByAdvisorUsername
     @PreAuthorize("hasAnyAuthority('TEACHER')")
-    public List<StudentResponse> getAllStudentByAdvisorUsername(HttpServletRequest request){
+    public List<StudentResponse> getAllStudentByAdvisorUsername(HttpServletRequest request){ //HttpServletRequest request ile bu methodu tetikleyen kullanıcının bilgisini alıyoruz
         String userName = request.getHeader("username");
         return teacherService.getAllStudentByAdvisorUsername(userName);
     }

@@ -4,7 +4,7 @@ import com.project.entity.concretes.user.User;
 import com.project.entity.enums.RoleType;
 import com.project.exception.BadRequestException;
 import com.project.exception.ResourceNotFoundException;
-import com.project.payload.messages.ErrorMessages;
+import com.project.payload.request.business.messages.ErrorMessages;
 import com.project.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
