@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
     boolean existsLessonByLessonNameEqualsIgnoreCase(String lessonName);
     Optional<Lesson> getLessonByLessonName(String lessonName); //Derived Method, Query
+
+    boolean existsByLessonName(String lessonName);
 }
