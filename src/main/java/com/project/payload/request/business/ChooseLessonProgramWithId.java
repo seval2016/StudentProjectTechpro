@@ -16,6 +16,6 @@ import java.util.Set;
 public class ChooseLessonProgramWithId {
 
     @NotNull(message = "Please select Lesson Program")
-    @Size(min = 1, message = "Lessons must not be empty")
+    @Size(min = 1, message = "Lesson must not be empty")
     private Set<Long> lessonProgramId;
 }

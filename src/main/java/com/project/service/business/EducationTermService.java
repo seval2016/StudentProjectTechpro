@@ -36,7 +36,7 @@ public class EducationTermService {
                 educationTermRepository.save(educationTermMapper.mapEducationTermRequestToEducationTerm(educationTermRequest));
 
         return ResponseMessage.<EducationTermResponse>builder()
-                .message(SuccessMessages.EDUCATION_TERM_SAVE)
+                .message(SuccessMessages.EDUCATION_TERM_SAVED)
                 .object(educationTermMapper.mapEducationTermToEducationTermResponse(savedEducationTerm))
                 .httpStatus(HttpStatus.CREATED)
                 .build();

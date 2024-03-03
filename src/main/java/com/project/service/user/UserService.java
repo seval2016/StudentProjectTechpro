@@ -1,4 +1,4 @@
-package com.project.payload.user;
+package com.project.service.user;
 
 import com.project.entity.concretes.user.User;
 import com.project.entity.enums.RoleType;

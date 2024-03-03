@@ -12,8 +12,8 @@ import java.util.Set;
 @Component
 public class DateTimeValidator {
 
-    public boolean checkTime(LocalTime start, LocalTime stop){
-        return start.isAfter(stop) || start.equals(stop);
+    private boolean checkTime(LocalTime start, LocalTime stop){
+        return start.isAfter(stop) || start.equals(stop) ;
     }
 
     public void checkTimeWithException(LocalTime start, LocalTime stop){
@@ -23,47 +23,50 @@ public class DateTimeValidator {
     }
 
 
+    //!!! Talep edilem , yeni Lesson Programlar arasinda cakisma var mi kontrolu
     private void checkDuplicateLessonPrograms(Set<LessonProgram> lessonPrograms){
-
         Set<String> uniqueLessonProgramDays = new HashSet<>();
-        Set<LocalTime> existingLessonProgramStartTime = new HashSet<>();
-        Set<LocalTime> existingLessonProgramStopTime = new HashSet<>();
+        Set<LocalTime> existingLessonProgramStartTimes = new HashSet<>();
+        Set<LocalTime> existingLessonProgramStopTimes = new HashSet<>();
 
-        for (LessonProgram lessonProgram :lessonPrograms ){
+        for(LessonProgram lessonProgram : lessonPrograms) {
             String lessonProgramDay = lessonProgram.getDay().name();
 
-            //!!! Karsilastirilan LessonProgramlar ayni gunde mi ??
+            // !!! Karsilastirilan LessonProgramlar Ayni Gunde ise
             if(uniqueLessonProgramDays.contains(lessonProgramDay)){
                 //!!! Baslama saatine gore kontrol
-                for (LocalTime startTime : existingLessonProgramStartTime){
-                    //!!! Baslama saati esit ise
+                for(LocalTime startTime: existingLessonProgramStartTimes){
+                    //!!! Baslama saatleri esit ise
                     if(lessonProgram.getStartTime().equals(startTime)){
                         throw new BadRequestException(ErrorMessages.LESSON_PROGRAM_ALREADY_EXIST);
                     }
-                    //!!! baslama saati, arasinda olma durumu
+                    // !!! mevcut ders programının başlangıç saati ile diğer bir ders programının başlangıç ve bitiş
+                    //  saatleri arasında çakışma olduğunda hata fırlatır.
                     if(lessonProgram.getStartTime().isBefore(startTime) && lessonProgram.getStopTime().isAfter(startTime)){
                         throw new BadRequestException(ErrorMessages.LESSON_PROGRAM_ALREADY_EXIST);
                     }
+
                 }
                 //!!! Bitis saatine gore kontrol
-                for(LocalTime stopTime : existingLessonProgramStopTime){
-                    if(lessonProgram.getStartTime().isBefore(stopTime) && lessonProgram.getStopTime().isAfter(stopTime)){
+                for(LocalTime stopTime : existingLessonProgramStopTimes){
+                    if(lessonProgram.getStartTime().isBefore(stopTime) && lessonProgram.getStopTime().isAfter(stopTime)) {
                         throw new BadRequestException(ErrorMessages.LESSON_PROGRAM_ALREADY_EXIST);
                     }
                 }
             }
-
-            // yukardaki kontrollerden gecen LP nin degiskenlerini set yapilara atiyorum
+            //!!! yukardaki Baslangic ve Biris saatine gore kontrollerden gecen LessonProgram, metodun en basinda olusturulan
+            // unique degiskenlere ataniyor
             uniqueLessonProgramDays.add(lessonProgramDay);
-            existingLessonProgramStartTime.add(lessonProgram.getStartTime());
-            existingLessonProgramStopTime.add(lessonProgram.getStopTime());
-
+            existingLessonProgramStartTimes.add(lessonProgram.getStartTime());
+            existingLessonProgramStopTimes.add(lessonProgram.getStopTime());
         }
     }
 
-    private void checkDuplicateLessonPrograms(Set<LessonProgram> existLessonProgram ,
-                                              Set<LessonProgram> lessonProgramRequest){
-        for (LessonProgram requestLessonProgram : lessonProgramRequest){
+    //!!!  mevcut ders programları ile talep edilen ders programları arasında karşılaştırma
+    private void checkDuplicateLessonPrograms(Set<LessonProgram> existLessonProgram,
+                                              Set<LessonProgram> lessonProgramRequest) {
+        for(LessonProgram requestLessonProgram : lessonProgramRequest ){
+
             String requestLessonProgramDay = requestLessonProgram.getDay().name();
             LocalTime requestStart = requestLessonProgram.getStartTime();
             LocalTime requestStop = requestLessonProgram.getStopTime();
@@ -71,24 +74,28 @@ public class DateTimeValidator {
             if(existLessonProgram.stream()
                     .anyMatch(lessonProgram ->
                             lessonProgram.getDay().name().equals(requestLessonProgramDay)
-                                    && (lessonProgram.getStartTime().equals(requestStart) // LP1 (SALI 09:00)  -- LP2 ( SALI 09:00 )
-                                    || (lessonProgram.getStartTime().isBefore(requestStart) && lessonProgram.getStopTime().isAfter(requestStart)) // LP1 ( Sali 09:00 - 11:00 ) --  LP2 ( Sali 10:00 - 12:00 )
+                                    && (lessonProgram.getStartTime().equals(requestStart)
+                                    || (lessonProgram.getStartTime().isBefore(requestStart) && lessonProgram.getStopTime().isAfter(requestStart))
                                     || (lessonProgram.getStartTime().isBefore(requestStop) && lessonProgram.getStopTime().isAfter(requestStop))
-                                    || (lessonProgram.getStartTime().isAfter(requestStart) && lessonProgram.getStopTime().isBefore(requestStop))  ))) {
+                                    || (lessonProgram.getStartTime().isAfter(requestStart) && lessonProgram.getStopTime().isBefore(requestStop))))
+
+            ) {
                 throw new BadRequestException(ErrorMessages.LESSON_PROGRAM_ALREADY_EXIST);
             }
-
         }
     }
 
     public void checkLessonPrograms(Set<LessonProgram> existLessonProgram,
-                                    Set<LessonProgram> lessonProgramRequest){
-        if(existLessonProgram.isEmpty() && lessonProgramRequest.size() > 1){
+                                    Set<LessonProgram> lessonProgramRequest) {
+        // !!! mevcut ders programi bos ise ve requestten gelen ders programi doluysa
+        if(existLessonProgram.isEmpty() && lessonProgramRequest.size()>1){
             checkDuplicateLessonPrograms(lessonProgramRequest);
         } else {
+            // !!! talep edilen icinde cakisma var mi
             checkDuplicateLessonPrograms(lessonProgramRequest);
-            checkDuplicateLessonPrograms(existLessonProgram,lessonProgramRequest);
+
+            // !!! talep edilen ile mevcutta cakisma var mi
+            checkDuplicateLessonPrograms(existLessonProgram, lessonProgramRequest);
         }
     }
-
 }
