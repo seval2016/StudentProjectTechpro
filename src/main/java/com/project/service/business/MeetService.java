@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,7 +91,6 @@ public class MeetService {
                                     (startTime.equals(existingStartTime) || stoptime.equals(existingStopTime))
 
                     )
-
             ){
                 throw new ConflictException(ErrorMessages.MEET_HOURS_CONFLICT);
             }
@@ -137,9 +135,7 @@ public class MeetService {
                 .message(SuccessMessages.MEET_DELETE)
                 .httpStatus(HttpStatus.OK)
                 .build();
-
     }
-
     private void isTeacherControl(Meet meet, User teacher){
         //!!! Teacher ise sadece kendi Meet lerini silebilsin
         if(
