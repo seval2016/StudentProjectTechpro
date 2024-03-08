@@ -14,6 +14,8 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByUsernameEquals(String username);
 
+    User findByUsername(String userName);
+
     boolean existsByUsername(String username);
 
     boolean existsBySsn(String ssn);
@@ -35,12 +37,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.isAdvisor =?1")
     List<User> findAllByAdvisor(Boolean aTrue);
 
-    @Query("SELECT (count(u) > 0 ) FROM User u WHERE u.userRole.roleType = ?1")
+    @Query("SELECT (COUNT (u)>0) FROM User u WHERE u.userRole.roleType = ?1")
     boolean findStudent(RoleType roleType);
-
 
     @Query(value = "SELECT MAX (u.studentNumber) FROM User u")
     int getMaxStudentNumber();
 
-    User findByUsername(String userName);
+    @Query("SELECT u FROM User u WHERE u.id IN :studentIds")
+    List<User> findByIdsEquals(Long[] studentIds);
+
 }

@@ -11,6 +11,7 @@ import com.project.payload.request.user.UserRequest;
 import com.project.payload.request.user.UserRequestWithoutPassword;
 import com.project.payload.response.abstracts.BaseUserResponse;
 import com.project.payload.response.business.ResponseMessage;
+import com.project.payload.response.user.TeacherResponse;
 import com.project.payload.response.user.UserResponse;
 import com.project.repository.user.UserRepository;
 import com.project.service.helper.MethodHelper;
@@ -107,21 +108,21 @@ public class UserService {
     public String deleteUserById(Long id, HttpServletRequest request) {
 
         //!!! silinecek olan user var mi ? kontrolu
-        User user = methodHelper.isUserExist(id); //Buradaki user silincek olan user
-        //!!! metodu tetikleyen kullanicinin rol bilgisini aliyoruz çünkü sadece admin silebilir
+        User user = methodHelper.isUserExist(id);
+        //!!! metodu tetikleyen kullanicinin ril bilgisini aliyoruz
         String userName = (String) request.getAttribute("username");
-        User user2 = userRepository.findByUsernameEquals(userName); //bursadaki user ise silinmeyi talep eden user
+        User user2 = userRepository.findByUsernameEquals(userName);
         //!!! builtIn ve Role kontrolu
-        if(Boolean.TRUE.equals(user.getBuilt_in())){ //silinmesi talep edilen kullanıcı built_in değilse diğer kontrolelleri yapıyoruz.
+        if(Boolean.TRUE.equals(user.getBuilt_in())){
             throw  new BadRequestException(ErrorMessages.NOT_PERMITTED_METHOD_MESSAGE);
-            // MANAGER sadece Teacher, student, Assistant_Manager'ı silebilir
+            // MANAGER sadece Teacher, student, Assistant_Manager silebilir
         } else if (user2.getUserRole().getRoleType() == RoleType.MANAGER) {
             if(!( (user.getUserRole().getRoleType() == RoleType.TEACHER) ||
                     (user.getUserRole().getRoleType() == RoleType.STUDENT) ||
                     (user.getUserRole().getRoleType() == RoleType.ASSISTANT_MANAGER)) ){
                 throw new BadRequestException(ErrorMessages.NOT_PERMITTED_METHOD_MESSAGE);
             }
-            // Mudur Yardimcisi sadece Teacher veya Student'ı silebilir
+            // Mudur Yardimcisi sadece Teacher veya Student silebilir
         } else if (user2.getUserRole().getRoleType() == RoleType.ASSISTANT_MANAGER) {
             if(!( (user.getUserRole().getRoleType() == RoleType.TEACHER) ||
                     (user.getUserRole().getRoleType() == RoleType.STUDENT) )){
@@ -156,14 +157,14 @@ public class UserService {
 
     public ResponseEntity<String> updateUserForUsers(UserRequestWithoutPassword userRequest,
                                                      HttpServletRequest request) {
-        String userName = (String) request.getAttribute("username"); //önce reguest ile gelen bu user kim onu alıyorum !
+        String userName = (String) request.getAttribute("username");
         User user = userRepository.findByUsernameEquals(userName);
 
         //!!! builtIn
         methodHelper.checkBuiltIn(user);
         // unique kontrolu
         uniquePropertyValidator.checkUniqueProperties(user, userRequest);
-        //!!! DTO --> POJO -->Burası kötü kod örneği normalde mapUserRequestToUpdatedUser kullanıyorduk.
+        //!!! DTO --> POJO
         user.setUsername(userRequest.getUsername());
         user.setBirthDay(userRequest.getBirthDay());
         user.setEmail(userRequest.getEmail());
@@ -191,5 +192,19 @@ public class UserService {
     //!!! Runner tarafi icin yazildi
     public long countAllAdmins(){
         return userRepository.countAdmin(RoleType.ADMIN);
+    }
+
+    public User getTeacherByUsername(String teacherUsername){
+        return userRepository.findByUsername(teacherUsername);
+    }
+
+    public User getUserByUserId(Long userId) {
+
+        return userRepository.findById(userId).orElseThrow(()->
+                new ResourceNotFoundException(ErrorMessages.NOT_FOUND_USER_MESSAGE));
+    }
+
+    public List<User> getStudentById(Long[] studentIds) {
+        return userRepository.findByIdsEquals(studentIds);
     }
 }

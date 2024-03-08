@@ -33,4 +33,12 @@ public class SuccessMessages {
     public static final String LESSON_PROGRAM_SAVED = "Lesson Program is Saved Successfully";
     public static final String LESSON_PROGRAM_DELETE = "Lesson Program is Deleted Successfully";
     public static final String LESSON_PROGRAM_ADD_TO_STUDENT = "Lesson Program added to student";
+
+
+    public static final String STUDENT_INFO_SAVED = "Student Info is Saved Successfully";
+    public static final String STUDENT_INFO_DELETE = "Student Info is Deleted Successfully";
+    public static final String STUDENT_INFO_UPDATE = "Student Info is Updated Successfully";
+
+
+    public static final String MEET_SAVED = "Meet is Saved Successfully";
 }

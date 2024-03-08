@@ -2,6 +2,8 @@ package com.project.payload.messages;
 
 public class ErrorMessages {
 
+
+
     private ErrorMessages() {
     }
 
@@ -38,5 +40,13 @@ public class ErrorMessages {
     public static final String NOT_FOUND_LESSON_PROGRAM_MESSAGE = "ERROR : Lesson program with this field %s not found";
     public static final String NOT_FOUND_LESSON_PROGRAM_MESSAGE_WITHOUT_ID_INFO="Error: Lesson program with this field not found";
     public static final String LESSON_PROGRAM_ALREADY_EXIST ="Error: Course schedule can not be selected for the same hour and date";
+
+
+    public static final String STUDENT_INFO_NOT_FOUND = "Error: Student Info with id %s not found";
+    public static final String STUDENT_INFO_NOT_FOUND_BY_STUDENT_ID= "Error: Student Info with  student id %d not found" ;
+
+
+
+    public static final String MEET_HOURS_CONFLICT = "Error: Meet hours has conflict with existing meets";
 
 }
