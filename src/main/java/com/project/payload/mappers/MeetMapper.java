@@ -32,4 +32,14 @@ public class MeetMapper {
                 .students(meet.getStudentList())
                 .build();
     }
+
+    public Meet mapMeetUpdateRequestToMeet(MeetRequest meetRequest, Long meetId){
+        return  Meet.builder()
+                .id(meetId)
+                .startTime(meetRequest.getStartTime())
+                .stopTime(meetRequest.getStopTime())
+                .date(meetRequest.getDate())
+                .description(meetRequest.getDescription())
+                .build();
+    }
 }

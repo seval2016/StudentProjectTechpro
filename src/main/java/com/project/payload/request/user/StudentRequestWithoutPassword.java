@@ -16,13 +16,13 @@ import javax.validation.constraints.Size;
 @SuperBuilder
 public class StudentRequestWithoutPassword extends AbstractUserRequest {
 
-    @NotNull(message = "Please enter Mother Name")
-    @Size(min = 2,max = 16, message = "Your mother name should be at least 2 chars")
-    @Pattern(regexp="\\A(?!\\s*\\Z).+", message = "Your mother name must be consist of the characters a-z")
+    @NotNull(message = "Please enter mother name")
+    @Size(min=2, max=16, message = "Your mother name should be at least 2 chars")
+    @Pattern(regexp="\\A(?!\\s*\\Z).+",message="Your mother name must consist of the characters a-z and 0-9.")
     private String motherName;
 
-    @NotNull(message = "Please enter Father Name")
-    @Size(min = 2,max = 16, message = "Your father name should be at least 2 chars")
-    @Pattern(regexp="\\A(?!\\s*\\Z).+", message = "Your father name must be consist of the characters a-z")
+    @NotNull(message = "Please enter father name")
+    @Size(min=2, max=16, message = "Your mother name should be at least 2 chars")
+    @Pattern(regexp="\\A(?!\\s*\\Z).+",message="Your father name must consist of the characters a-z and 0-9.")
     private String fatherName;
 }

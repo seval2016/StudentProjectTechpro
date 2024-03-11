@@ -2,7 +2,6 @@ package com.project.service;
 
 import com.project.entity.concretes.user.User;
 import com.project.exception.BadRequestException;
-
 import com.project.payload.mappers.UserMapper;
 import com.project.payload.messages.ErrorMessages;
 import com.project.payload.request.authentication.LoginRequest;
@@ -77,7 +76,8 @@ public class AuthenticationService {
         return userMapper.mapUserToUserResponse(userRepository.findByUsernameEquals(username));
     }
 
-    public void updatePassword(UpdatePasswordRequest updatePasswordRequest,HttpServletRequest request) {
+    public void updatePassword(UpdatePasswordRequest updatePasswordRequest,
+                               HttpServletRequest request) {
 
         String userName = (String) request.getAttribute("username");
         User user = userRepository.findByUsernameEquals(userName);

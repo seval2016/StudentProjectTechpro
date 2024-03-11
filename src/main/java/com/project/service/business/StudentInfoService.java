@@ -13,14 +13,11 @@ import com.project.payload.messages.ErrorMessages;
 import com.project.payload.messages.SuccessMessages;
 import com.project.payload.request.business.StudentInfoRequest;
 import com.project.payload.request.business.UpdateStudentInfoRequest;
-
 import com.project.payload.response.business.ResponseMessage;
 import com.project.payload.response.business.StudentInfoResponse;
 import com.project.repository.business.StudentInfoRepository;
-
 import com.project.service.helper.MethodHelper;
 import com.project.service.helper.PageableHelper;
-
 import com.project.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,7 +47,6 @@ public class StudentInfoService {
 
     @Value("${final.exam.impact.percentage}")
     private Double finalExamPercentage;
-
 
     public ResponseMessage<StudentInfoResponse> saveStudentInfo(HttpServletRequest httpServletRequest,
                                                                 StudentInfoRequest studentInfoRequest) {
@@ -101,20 +97,21 @@ public class StudentInfoService {
     }
 
     private Double calculateExamAverage(Double midtermExam, Double finalExam){
-        return ( (midtermExam * midtermExamPercentage) + (finalExam * finalExamPercentage) );
+
+        return (midtermExam * midtermExamPercentage ) + ( finalExam * finalExamPercentage );
     }
 
     private Note checkLetterGrade(Double average){
-        if(average<50.0){
+        if(average<50.0) {
             return Note.FF;
         } else if (average<60) {
             return Note.DD;
         } else if (average<65) {
             return Note.CC;
         } else if (average<70) {
-            return Note.CB;
+            return  Note.CB;
         } else if (average<75) {
-            return Note.BB;
+            return  Note.BB;
         } else if (average<80) {
             return Note.BA;
         } else {
@@ -145,65 +142,70 @@ public class StudentInfoService {
         }
     }
 
-    public StudentInfoResponse getStudentInfoById(Long studentInfoId) {
-
-        return studentInfoMapper.mapStudentInfoToStudentInfoResponse(isStudentInfoExistById(studentInfoId));
-    }
-
     public ResponseMessage<StudentInfoResponse> update(UpdateStudentInfoRequest studentInfoRequest, Long studentInfoId) {
 
-        Lesson lesson =lessonService.isLessonExistById(studentInfoRequest.getLessonId());
+        Lesson lesson = lessonService.isLessonExistById(studentInfoRequest.getLessonId());
         StudentInfo studentInfo = isStudentInfoExistById(studentInfoId);
-        EducationTerm educationTerm =
-                educationTermService.findEducationTermById(studentInfoRequest.getEducationTermId());
-        Double noteAverage =
-                calculateExamAverage(studentInfoRequest.getMidtermExam(), studentInfoRequest.getFinalExam());
+        EducationTerm educationTerm =educationTermService.findEducationTermById(studentInfoRequest.getEducationTermId());
+        Double noteAverage = calculateExamAverage(studentInfoRequest.getMidtermExam(), studentInfoRequest.getFinalExam());
         Note note = checkLetterGrade(noteAverage);
-        StudentInfo studentInfoForUpdate = studentInfoMapper.mapStudentInfoUpdateToStudentInfo(studentInfoRequest, studentInfoId, lesson, educationTerm, note,noteAverage);
+        //!!! DTO --> POJO
+        StudentInfo studentInfoUpdate =
+                studentInfoMapper.mapStudentInfoUpdateToStudentInfo(studentInfoRequest,studentInfoId,lesson,
+                        educationTerm,note,noteAverage);
+        studentInfoUpdate.setTeacher(studentInfo.getTeacher());
+        studentInfoUpdate.setStudent(studentInfo.getStudent());
 
-        studentInfoForUpdate.setTeacher(studentInfo.getTeacher());
-
-        studentInfoForUpdate.setStudent(studentInfo.getStudent());
-
-        StudentInfo updatedStudentInfo =  studentInfoRepository.save(studentInfoForUpdate);
+        StudentInfo updatedStudentInfo =  studentInfoRepository.save(studentInfoUpdate);
 
         return ResponseMessage.<StudentInfoResponse>builder()
                 .message(SuccessMessages.STUDENT_INFO_UPDATE)
                 .httpStatus(HttpStatus.OK)
                 .object(studentInfoMapper.mapStudentInfoToStudentInfoResponse(updatedStudentInfo))
                 .build();
-
-    }
-
-    public Page<StudentInfoResponse> getAllForTeacher(HttpServletRequest httpServletRequest, int page, int size) {
-        Pageable pageable = pageableHelper.getPageableWithProperties(page, size);
-        String username = (String) httpServletRequest.getAttribute("username");
-
-        return studentInfoRepository.findByTeacherId_UsernameEquals(username, pageable)
-                .map(studentInfoMapper::mapStudentInfoToStudentInfoResponse);
-    }
-
-    public Page<StudentInfoResponse> getAllForStudent(HttpServletRequest httpServletRequest, int page, int size) {
-        Pageable pageable = pageableHelper.getPageableWithProperties(page, size);
-        String username = (String) httpServletRequest.getAttribute("username");
-
-        return studentInfoRepository.findByStudentId_UsernameEquals(username, pageable)
-                .map(studentInfoMapper::mapStudentInfoToStudentInfoResponse);
-    }
-
-    public List<StudentInfoResponse> findStudentInfoByStudentId(Long studentId) {
-        User student = methodHelper.isUserExist(studentId);
-        methodHelper.checkRole(student, RoleType.STUDENT);
-
-        return studentInfoRepository.findByStudent_IdEquals(studentId)
-                .stream()
-                .map(studentInfoMapper::mapStudentInfoToStudentInfoResponse)
-                .collect(Collectors.toList());
     }
 
     public Page<StudentInfoResponse> getAllStudentInfoByPage(int page, int size, String sort, String type) {
         Pageable pageable = pageableHelper.getPageableWithProperties(page, size, sort, type);
         return studentInfoRepository.findAll(pageable)
+                .map(studentInfoMapper::mapStudentInfoToStudentInfoResponse);
+    }
+
+    public List<StudentInfoResponse> getStudentInfoByStudentId(Long studentId) {
+        User student = methodHelper.isUserExist(studentId);
+        // gelen user Student rolune sahip mi ??
+        methodHelper.checkRole(student,RoleType.STUDENT);
+
+        // !!! Bu ogrenciye ait bir studentInfo var mi ??
+        if(!studentInfoRepository.existsByStudent_IdEquals(studentId)){ // JPQL
+            throw new ResourceNotFoundException(
+                    String.format(ErrorMessages.STUDENT_INFO_NOT_FOUND_BY_STUDENT_ID,studentId));
+        }
+
+        return studentInfoRepository.findByStudent_IdEquals(studentId) // jPQL
+                .stream()
+                .map(studentInfoMapper::mapStudentInfoToStudentInfoResponse)
+                .collect(Collectors.toList());
+    }
+
+    public StudentInfoResponse findStudentInfoById(Long studentInfoId) {
+        return studentInfoMapper.mapStudentInfoToStudentInfoResponse(isStudentInfoExistById(studentInfoId));
+    }
+
+    public Page<StudentInfoResponse> getAllForTeacher(HttpServletRequest httpServletRequest, int page, int size) {
+
+        Pageable pageable = pageableHelper.getPageableWithProperties(page,size);
+        String userName = (String) httpServletRequest.getAttribute("username");
+
+        return studentInfoRepository.findByTeacherId_UsernameEquals(userName,pageable)
+                .map(studentInfoMapper::mapStudentInfoToStudentInfoResponse);
+    }
+
+    public Page<StudentInfoResponse> getAllForStudent(HttpServletRequest httpServletRequest, int page, int size) {
+        Pageable pageable = pageableHelper.getPageableWithProperties(page,size);
+        String userName = (String) httpServletRequest.getAttribute("username");
+
+        return studentInfoRepository.findByStudentId_UsernameEquals(userName,pageable)
                 .map(studentInfoMapper::mapStudentInfoToStudentInfoResponse);
     }
 }

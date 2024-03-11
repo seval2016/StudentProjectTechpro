@@ -1,5 +1,6 @@
 package com.project.payload.request.user;
 
+
 import com.project.payload.request.abstracts.BaseUserRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.Set;
 public class TeacherRequest extends BaseUserRequest {
 
     @NotNull(message = "Please select Lesson")
-    private Set<Long> lessonsIdList;//lessonProgramIdList
+    private Set<Long> lessonsIdList; // lessonProgramIdList
 
     @NotNull(message = "Please select isAdvisor Teacher")
     private Boolean isAdvisorTeacher;

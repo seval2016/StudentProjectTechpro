@@ -12,6 +12,7 @@ public class EducationTermMapper {
 
     //!!! DTO --> POJO
     public EducationTerm mapEducationTermRequestToEducationTerm(EducationTermRequest educationTermRequest){
+
         return EducationTerm.builder()
                 .term(educationTermRequest.getTerm())
                 .startDate(educationTermRequest.getStartDate())
@@ -21,7 +22,8 @@ public class EducationTermMapper {
     }
 
     //!!! POJO --> DTO
-    public EducationTermResponse mapEducationTermToEducationTermResponse(EducationTerm educationTerm) {
+    public EducationTermResponse mapEducationTermToEducationTermResponse(EducationTerm educationTerm){
+
         return EducationTermResponse.builder()
                 .id(educationTerm.getId())
                 .term(educationTerm.getTerm())
@@ -30,11 +32,15 @@ public class EducationTermMapper {
                 .lastRegistrationDate(educationTerm.getLastRegistrationDate())
                 .build();
     }
-    //!!! Update kısmında kullanılacak
-    public EducationTerm mapEducationTermRequestToUpdatedEducationTerm(Long id, EducationTermRequest educationTermRequest) {
+
+    //!!! Update kisminda kullanilacak
+    public EducationTerm mapEducationTermRequestToUpdatedEducationTerm(Long id,EducationTermRequest educationTermRequest){
+
         return mapEducationTermRequestToEducationTerm(educationTermRequest)
                 .toBuilder()
                 .id(id)
                 .build();
     }
+
+
 }

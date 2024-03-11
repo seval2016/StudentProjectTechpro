@@ -91,6 +91,7 @@ public class MeetService {
                                     (startTime.equals(existingStartTime) || stoptime.equals(existingStopTime))
 
                     )
+
             ){
                 throw new ConflictException(ErrorMessages.MEET_HOURS_CONFLICT);
             }
@@ -106,13 +107,13 @@ public class MeetService {
     }
 
     public ResponseMessage<MeetResponse> getMeetById(Long meetId) {
+
         return ResponseMessage.<MeetResponse>builder()
                 .message(SuccessMessages.MEET_FOUND)
                 .httpStatus(HttpStatus.OK)
                 .object(meetMapper.mapMeetToMeetResponse(isMeetExistById(meetId)))
                 .build();
     }
-
     private Meet isMeetExistById(Long meetId){
         return meetRepository
                 .findById(meetId).orElseThrow(
@@ -122,22 +123,17 @@ public class MeetService {
     public ResponseMessage delete(Long meetId, HttpServletRequest httpServletRequest) {
         Meet meet = isMeetExistById(meetId);
         //!!! Teacher ise sadece kendi Meet lerini silebilsin
-
-        String userName = (String) httpServletRequest.getAttribute("username");
-        User teacher = methodHelper.isUserExistByUsername(userName);
-        if(teacher.getUserRole().getRoleType().equals(RoleType.TEACHER)){
-            isTeacherControl(meet, teacher);
-        }
-
+        isTeacherControl(meet, httpServletRequest);
         meetRepository.deleteById(meetId);
-        //TODO : ogrencilerden meet silinecek
         return ResponseMessage.builder()
                 .message(SuccessMessages.MEET_DELETE)
                 .httpStatus(HttpStatus.OK)
                 .build();
     }
-    private void isTeacherControl(Meet meet, User teacher){
+    private void isTeacherControl(Meet meet, HttpServletRequest httpServletRequest){
         //!!! Teacher ise sadece kendi Meet lerini silebilsin
+        String userName = (String) httpServletRequest.getAttribute("username");
+        User teacher = methodHelper.isUserExistByUsername(userName);
         if(
                 (teacher.getUserRole().getRoleType().equals(RoleType.TEACHER)) && // metodu tetikleyenin Role bilgisi TEACHER ise
                         !(meet.getAdvisoryTeacher().getId().equals(teacher.getId())) // Teacher, baskasinin Meet ini silmeye calisiyorsa
@@ -150,5 +146,66 @@ public class MeetService {
     public Page<MeetResponse> getAllMeetByPage(int page, int size) {
         Pageable pageable = pageableHelper.getPageableWithProperties(page, size);
         return meetRepository.findAll(pageable).map(meetMapper::mapMeetToMeetResponse);
+    }
+
+    public ResponseMessage<MeetResponse> updateMeetById(MeetRequest meetRequest, Long meetId,
+                                                        HttpServletRequest httpServletRequest) {
+
+        Meet meet = isMeetExistById(meetId);
+        isTeacherControl(meet, httpServletRequest);
+        dateTimeValidator.checkTimeWithException(meetRequest.getStartTime(), meetRequest.getStopTime());
+        //!!! uodate de unigue olmasi gerken bilgiler, DB deki meet degerleri ile ayni degilse Unique olma kontrolune giriyoruz
+        if( !(
+                meet.getDate().equals(meetRequest.getDate()) &&
+                        meet.getStartTime().equals(meetRequest.getStartTime()) &&
+                        meet.getStopTime().equals(meetRequest.getStopTime())
+        )
+        ){
+            // student icin cakisma var mi kontrolu
+            for(Long studentId :meetRequest.getStudentIds()) {
+                checkMeetConflict(studentId, meetRequest.getDate(), meetRequest.getStartTime(),
+                        meetRequest.getStopTime());
+            }
+            // teacher icin cakisma var mi kontrolu
+            checkMeetConflict(meet.getAdvisoryTeacher().getId(),  meetRequest.getDate(), meetRequest.getStartTime(),
+                    meetRequest.getStopTime() );
+        }
+
+        List<User> students = userService.getStudentById(meetRequest.getStudentIds());
+        //!!! DTO --> POJO
+        Meet updatedMeet = meetMapper.mapMeetUpdateRequestToMeet(meetRequest, meetId);
+        updatedMeet.setStudentList(students);
+        updatedMeet.setAdvisoryTeacher(meet.getAdvisoryTeacher());
+
+        Meet savedMeet =  meetRepository.save(updatedMeet);
+
+        return ResponseMessage.<MeetResponse>builder()
+                .message(SuccessMessages.MEET_UPDATE)
+                .httpStatus(HttpStatus.OK)
+                .object(meetMapper.mapMeetToMeetResponse(savedMeet))
+                .build();
+    }
+
+    public List<MeetResponse> getAllMeetByTeacher(HttpServletRequest httpServletRequest) {
+        String userName = (String) httpServletRequest.getAttribute("username");
+        User advisoryTeacher = userService.getTeacherByUsername(userName);
+        methodHelper.checkAdvisor(advisoryTeacher);
+
+        return meetRepository.getByAdvisoryTeacher_IdEquals(advisoryTeacher.getId())
+                .stream()
+                .map(meetMapper::mapMeetToMeetResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<MeetResponse> getAllMeetByStudent(HttpServletRequest httpServletRequest) {
+        String userName = (String) httpServletRequest.getAttribute("username");
+        User student =  methodHelper.isUserExistByUsername(userName);
+
+        methodHelper.checkRole(student, RoleType.STUDENT);
+
+        return meetRepository.findByStudentList_IdEquals(student.getId())
+                .stream()
+                .map(meetMapper::mapMeetToMeetResponse)
+                .collect(Collectors.toList());
     }
 }

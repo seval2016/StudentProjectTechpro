@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/studentInfo")
@@ -36,18 +37,6 @@ public class StudentInfoController {
     }
 
     // Not: ODEV ---> getAllWithPage /getAllStudentInfoByPage yoneticiler tetikliyecek
-
-    // Not: ODEV ---> getStudentInfoByStudentId() yoneticiler tetikliyecek  /getByStudentId/{studentId}
-
-    // Not :ODEV ---> getStudentInfoById() yoneticiler tetikliyecek , /get/{studentInfoId}
-
-    @PutMapping("/update/{studentInfoId}") // http://localhost:8080/studentInfo/update/2
-    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
-    public ResponseMessage<StudentInfoResponse> update(@RequestBody @Valid UpdateStudentInfoRequest studentInfoRequest,
-                                                       @PathVariable Long studentInfoId) {
-        return studentInfoService.update(studentInfoRequest, studentInfoId);
-    }
-
     @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER','ASSISTANT_MANAGER')")
     @GetMapping("/getAllStudentInfoByPage") // http://localhost:8080/studentInfo/getAllStudentInfoByPage?page=0&size=10&sort=id&type=desc
     public Page<StudentInfoResponse> getAllStudentInfoByPage(
@@ -58,8 +47,42 @@ public class StudentInfoController {
     ) {
         return  studentInfoService.getAllStudentInfoByPage(page,size,sort,type);
     }
+
+    // Not: ODEV ---> getStudentInfoByStudentId() yoneticiler tetikliyecek  /getByStudentId/{studentId}
+    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER','ASSISTANT_MANAGER')")
+    @GetMapping("/getByStudentId/{studentId}")  // http://localhost:8080/studentInfo/getByStudentId/3
+    public ResponseEntity<List<StudentInfoResponse>> getStudentInfoByStudentId(@PathVariable Long studentId){
+        List<StudentInfoResponse>studentInfoResponse = studentInfoService.getStudentInfoByStudentId(studentId);
+        return ResponseEntity.ok(studentInfoResponse);
+    }
+
+    // Not :ODEV ---> getStudentInfoById() yoneticiler tetikliyecek , /get/{studentInfoId}
+    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER','ASSISTANT_MANAGER')")
+    @GetMapping("/get/{studentInfoId}") // http://localhost:8080/studentInfo/get/3
+    public ResponseEntity<StudentInfoResponse>getStudentInfoById(@PathVariable Long studentInfoId){
+        return ResponseEntity.ok(studentInfoService.findStudentInfoById(studentInfoId));
+    }
+
+    @PutMapping("/update/{studentInfoId}") // http://localhost:8080/studentInfo/update/2
+    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
+    public ResponseMessage<StudentInfoResponse> update(@RequestBody @Valid UpdateStudentInfoRequest studentInfoRequest,
+                                                       @PathVariable Long studentInfoId) {
+        return studentInfoService.update(studentInfoRequest, studentInfoId);
+    }
+
+    // !!! -> Bir ogretmen kendi ogrencilerinin bilgilerini almak isterse :
+    @GetMapping("/getAllForTeacher") // http://localhost:8080/studentInfo/getAllForTeacher
+    @PreAuthorize("hasAnyAuthority('TEACHER')")
+    public ResponseEntity<Page<StudentInfoResponse>> getAllForTeacher(
+            HttpServletRequest httpServletRequest,
+            @RequestParam(value = "page") int page,
+            @RequestParam(value = "size") int size
+    ) {
+        return new ResponseEntity<>(studentInfoService.getAllForTeacher(httpServletRequest, page, size), HttpStatus.OK);
+    }
+
     // !!! --> bir ogrenci kendi bilgilerini almak isterse
-    @GetMapping("/getAllForStudent") // http://localhost:8080/studentInfo/getAllForStudent
+    @GetMapping("/getAllForStudent") // http://localhost:8080/studentInfo/getAllForStudent?page=0&size=10
     @PreAuthorize("hasAnyAuthority('STUDENT')")
     public ResponseEntity<Page<StudentInfoResponse>> getAllForStudent(
             HttpServletRequest httpServletRequest,

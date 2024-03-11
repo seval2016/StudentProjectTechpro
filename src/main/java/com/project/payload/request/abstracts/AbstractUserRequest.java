@@ -33,7 +33,7 @@ public abstract class AbstractUserRequest {
 
     @NotNull(message = "Please enter your birthday")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @Past(message = "Your birthday can not be in the future") //@past ile doğum tarihi gibi durumlarda gelecek tarihin girilmesini engeller
+    @Past(message = "Your birthday can not be in the future")
     private LocalDate birthDay;
 
     @NotNull

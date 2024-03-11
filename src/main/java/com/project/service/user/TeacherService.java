@@ -8,6 +8,7 @@ import com.project.exception.ConflictException;
 import com.project.payload.mappers.UserMapper;
 import com.project.payload.messages.ErrorMessages;
 import com.project.payload.messages.SuccessMessages;
+import com.project.payload.request.business.ChooseLessonTeacherRequest;
 import com.project.payload.request.user.TeacherRequest;
 import com.project.payload.response.business.ResponseMessage;
 import com.project.payload.response.user.StudentResponse;
@@ -17,6 +18,7 @@ import com.project.repository.user.UserRepository;
 import com.project.repository.user.UserRoleRepository;
 import com.project.service.business.LessonProgramService;
 import com.project.service.helper.MethodHelper;
+import com.project.service.validator.DateTimeValidator;
 import com.project.service.validator.UniquePropertyValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,6 +42,7 @@ public class TeacherService {
     private final MethodHelper methodHelper;
     private final ContactMessageRepository contactMessageRepository;
     private final LessonProgramService lessonProgramService;
+    private final DateTimeValidator dateTimeValidator;
 
     public ResponseMessage<TeacherResponse> saveTeacher(TeacherRequest teacherRequest) {
 
@@ -153,5 +156,32 @@ public class TeacherService {
                 .stream()
                 .map(userMapper::mapUserToUserResponse)
                 .collect(Collectors.toList());
+    }
+
+    public ResponseMessage<TeacherResponse> addLessonProgram(ChooseLessonTeacherRequest chooseLessonTeacherRequest) {
+
+        // !!! ya yoksa kontrolu
+        User teacher = methodHelper.isUserExist(chooseLessonTeacherRequest.getTeacherId());
+
+        methodHelper.checkRole(teacher,RoleType.TEACHER);
+
+
+        Set<LessonProgram> lessonPrograms =
+                lessonProgramService.getLessonProgramById(chooseLessonTeacherRequest.getLessonProgramId());
+        // !!! ogretmenin mevcut ders programi getiriliyor
+        Set<LessonProgram> teachersLessonProgram = teacher.getLessonsProgramList();
+        // !!! mevcut ders programları ve seçilen ders programları arasında aynı olanları kontrol ediliyor.
+        // !!!   Eğer aynı olan bir ders programı bulunursa, BadRequestException fırlatılır
+        dateTimeValidator.checkLessonPrograms(teachersLessonProgram, lessonPrograms);
+        teachersLessonProgram.addAll(lessonPrograms);
+        //!!! Son olarak, öğretmenin ders programları güncellenir
+        teacher.setLessonsProgramList(teachersLessonProgram);
+        User updatedTeacher = userRepository.save(teacher);
+
+        return ResponseMessage.<TeacherResponse>builder()
+                .message(SuccessMessages.LESSON_PROGRAM_ADD_TO_TEACHER)
+                .httpStatus(HttpStatus.CREATED)
+                .object(userMapper.mapUserToTeacherResponse(updatedTeacher))
+                .build();
     }
 }

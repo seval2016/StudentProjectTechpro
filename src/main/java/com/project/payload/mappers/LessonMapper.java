@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class LessonMapper {
 
-    //!!! DTO --> POJO
     public Lesson mapLessonRequestToLesson(LessonRequest lessonRequest){
+
         return Lesson.builder()
                 .lessonName(lessonRequest.getLessonName())
                 .creditScore(lessonRequest.getCreditScore())
@@ -19,8 +19,8 @@ public class LessonMapper {
                 .build();
     }
 
-    //!!! POJO --> DTO
     public LessonResponse mapLessonToLessonResponse(Lesson lesson){
+
         return LessonResponse.builder()
                 .lessonId(lesson.getLessonId())
                 .lessonName(lesson.getLessonName())

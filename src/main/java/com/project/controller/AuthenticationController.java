@@ -1,8 +1,10 @@
 package com.project.controller;
 
+import com.project.entity.concretes.user.User;
 import com.project.payload.messages.SuccessMessages;
 import com.project.payload.request.authentication.LoginRequest;
 import com.project.payload.request.business.UpdatePasswordRequest;
+import com.project.payload.response.abstracts.BaseUserResponse;
 import com.project.payload.response.authentication.AuthResponse;
 import com.project.payload.response.user.UserResponse;
 import com.project.service.AuthenticationService;

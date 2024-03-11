@@ -7,17 +7,15 @@ import com.project.entity.enums.Note;
 import com.project.payload.request.business.StudentInfoRequest;
 import com.project.payload.request.business.UpdateStudentInfoRequest;
 import com.project.payload.response.business.StudentInfoResponse;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Data
 @Component
 public class StudentInfoMapper {
 
     @Autowired
     private UserMapper userMapper;
-    //!!! DTO --> POJO
+
     public StudentInfo mapStudentInfoRequestToStudentInfo(StudentInfoRequest studentInfoRequest,
                                                           Note note, Double average){
         return StudentInfo.builder()
@@ -30,7 +28,7 @@ public class StudentInfoMapper {
                 .build();
     }
 
-    public StudentInfoResponse mapStudentInfoToStudentInfoResponse(StudentInfo studentInfo) {
+    public StudentInfoResponse mapStudentInfoToStudentInfoResponse(StudentInfo studentInfo){
         return StudentInfoResponse.builder()
                 .lessonName(studentInfo.getLesson().getLessonName())
                 .creditScore(studentInfo.getLesson().getCreditScore())
@@ -53,16 +51,17 @@ public class StudentInfoMapper {
                                                          EducationTerm educationTerm,
                                                          Note note,
                                                          Double average){
+
         return StudentInfo.builder()
                 .id(studentInfoRequestId)
-                .infoNote(studentInfoRequest.getInfoNote())
-                .midtermExam(studentInfoRequest.getMidtermExam())
-                .finalExam(studentInfoRequest.getFinalExam())
-                .absentee(studentInfoRequest.getAbsentee())
+                .infoNote(studentInfoRequest.getInfoNote()) //
+                .midtermExam(studentInfoRequest.getMidtermExam()) //
+                .finalExam(studentInfoRequest.getFinalExam()) //
+                .absentee(studentInfoRequest.getAbsentee()) //
                 .lesson(lesson)
                 .educationTerm(educationTerm)
-                .examAverage(average)
-                .letterGrade(note)
+                .examAverage(average) //
+                .letterGrade(note) //
                 .build();
     }
 }

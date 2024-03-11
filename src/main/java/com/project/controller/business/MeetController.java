@@ -28,27 +28,25 @@ public class MeetController {
     }
 
     // Not: ODEV  --> getALL   ("/getAll") sadece ADMIN
-    @GetMapping("/getAll") //http://localhost:8080/meet/getAll
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority( 'ADMIN')")
+    @GetMapping("/getAll")  // http://localhost:8080/meet/getAll
     public List<MeetResponse> getAll(){
-            return meetService.getAll();
+        return meetService.getAll();
     }
-    // Not: ODEV --> getMeetById    ("/getMeetById/{meetId}")    sadece ADMIN
-    @GetMapping("/getMeetById/{meetId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseMessage<MeetResponse> getMeetById (@PathVariable Long meetId){
+    // Not: ODEV --> geetMeetById    ("/getMeetById/{meetId}")    sadece ADMIN
+    @PreAuthorize("hasAnyAuthority( 'ADMIN')")
+    @GetMapping("/getMeetById/{meetId}")  // http://localhost:8080/meet/getMeetById/1
+    public ResponseMessage<MeetResponse> getMeetById(@PathVariable Long meetId){
         return meetService.getMeetById(meetId);
     }
-
-    // Not :ODEV --> DELETE("/delete/{meetId}")  TEACHER ve ADMIN
-    @DeleteMapping("/delete/{meetId}")//http://localhost:8080/meet/delete/3
+    // Not :ODEV --> DELETE     ("/delete/{meetId}")  TEACHER ve ADMIN
+    @DeleteMapping("/delete/{meetId}")
     @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
     public ResponseMessage delete(@PathVariable Long meetId, HttpServletRequest httpServletRequest){
-        return meetService.delete(meetId,httpServletRequest);
+        return meetService.delete(meetId, httpServletRequest);
     }
-
     // Not: ODEV --> getALLWithPage  ("/getAllMeetByPage")  sadece Admin
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority( 'ADMIN')")
     @GetMapping("/getAllMeetByPage") // http://localhost:8080/meet/getAllMeetByPage?page=0&size=1
     public Page<MeetResponse> getAllMeetByPage(
             @RequestParam(value = "page") int page,
@@ -56,4 +54,26 @@ public class MeetController {
     ){
         return meetService.getAllMeetByPage(page,size);
     }
+
+    @PutMapping("/update/{meetId}") // http://localhost:8080/meet/update/1
+    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
+    public ResponseMessage<MeetResponse> updateMeetById(@RequestBody @Valid MeetRequest meetRequest,
+                                                        @PathVariable Long meetId,
+                                                        HttpServletRequest httpServletRequest) {
+        return meetService.updateMeetById(meetRequest, meetId, httpServletRequest);
+    }
+
+    @GetMapping("/getAllMeetByAdvisorTeacherAsList")  // http://localhost:8080/meet/getAllMeetByAdvisorTeacherAsList
+    @PreAuthorize("hasAnyAuthority('TEACHER')")
+    public List<MeetResponse> getAllMeetByTeacher(HttpServletRequest httpServletRequest){
+        return meetService.getAllMeetByTeacher(httpServletRequest);
+    }
+
+    @GetMapping("/getAllMeetByStudent")  // http://localhost:8080/meet/getAllMeetByStudent
+    @PreAuthorize("hasAnyAuthority('STUDENT')")
+    public List<MeetResponse> getAllMeetByStudent(HttpServletRequest httpServletRequest){
+        return meetService.getAllMeetByStudent(httpServletRequest);
+    }
+
+
 }

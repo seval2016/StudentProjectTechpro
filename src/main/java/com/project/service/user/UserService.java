@@ -11,7 +11,6 @@ import com.project.payload.request.user.UserRequest;
 import com.project.payload.request.user.UserRequestWithoutPassword;
 import com.project.payload.response.abstracts.BaseUserResponse;
 import com.project.payload.response.business.ResponseMessage;
-import com.project.payload.response.user.TeacherResponse;
 import com.project.payload.response.user.UserResponse;
 import com.project.repository.user.UserRepository;
 import com.project.service.helper.MethodHelper;

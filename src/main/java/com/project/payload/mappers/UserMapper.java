@@ -140,7 +140,6 @@ public class UserMapper {
     }
 
     public User mapStudentRequestToUser(StudentRequest studentRequest){
-
         return User.builder()
                 .fatherName(studentRequest.getFatherName())
                 .motherName(studentRequest.getMotherName())
@@ -156,12 +155,5 @@ public class UserMapper {
                 .gender(studentRequest.getGender())
                 .built_in(studentRequest.getBuiltIn())
                 .build();
-    }
-
-
-    public User mapStudentRequestToUpdatedUser(StudentRequest studentRequest, Long userId) {
-        User student = mapStudentRequestToUser(studentRequest);
-        student.setId(userId);
-        return student;
     }
 }
